@@ -22,17 +22,24 @@ func (ctx *HttpContext) ReadReqJson(req interface{}) error {
 func (ctx *HttpContext) WriteRspJson(code int, rsp interface{}) error {
 	ctx.RspWriter.WriteHeader(code)
 
-	rspJson, err := json.Marshal(rsp)
-	if err != nil {
+	if rsp != nil {
+		rspJson, err := json.Marshal(rsp)
+		if err != nil {
+			return err
+		}
+
+		_, err = ctx.RspWriter.Write(rspJson)
 		return err
 	}
-
-	_, err = ctx.RspWriter.Write(rspJson)
-	return err
+	return nil
 }
 
 func (ctx *HttpContext) Ok(rsp interface{}) error {
 	return ctx.WriteRspJson(http.StatusOK, rsp)
+}
+
+func (ctx *HttpContext) Bad() error {
+	return ctx.WriteRspJson(http.StatusBadRequest, nil)
 }
 
 func BuildHttpContext(writer http.ResponseWriter, request *http.Request) *HttpContext {
