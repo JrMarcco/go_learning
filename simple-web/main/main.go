@@ -4,6 +4,7 @@ import (
 	"go_learning/simple-web/pkg/context"
 	"go_learning/simple-web/pkg/server"
 	"log"
+	"net/http"
 )
 
 type RegRsp struct {
@@ -12,16 +13,16 @@ type RegRsp struct {
 
 func TestRoute(ctx *context.HttpContext) {
 	if err := ctx.Ok(RegRsp{UserId: "testUserId"}); err != nil {
-		log.Fatalf("%-v", err)
+		log.Fatalf("%-v\n", err)
 	}
 }
 
 func main() {
 	simpleHttpServer := server.DefaultHttpServer()
 
-	simpleHttpServer.Route("/reg", TestRoute)
+	simpleHttpServer.Route(http.MethodGet, "/reg", TestRoute)
 
 	if err := simpleHttpServer.Start(); err != nil {
-		log.Fatalf("%-v", err)
+		panic(err)
 	}
 }

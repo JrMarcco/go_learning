@@ -42,6 +42,10 @@ func (ctx *HttpContext) Bad() error {
 	return ctx.WriteRspJson(http.StatusBadRequest, nil)
 }
 
+func (ctx *HttpContext) NotFound() error {
+	return ctx.WriteRspJson(http.StatusNotFound, nil)
+}
+
 func BuildHttpContext(writer http.ResponseWriter, request *http.Request) *HttpContext {
 	return &HttpContext{
 		RspWriter: writer,
