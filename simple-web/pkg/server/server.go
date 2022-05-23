@@ -1,11 +1,12 @@
 package server
 
 import (
+	"go_learning/simple-web/pkg/context"
 	"net/http"
 )
 
 type HttpServer interface {
-	Route(pattern string, handlerFunc http.HandlerFunc)
+	Route(pattern string, handlerFunc func(ctx *context.HttpContext))
 	Start() error
 }
 
@@ -13,20 +14,22 @@ type simpleHttpServer struct {
 	addr string
 }
 
-func (shs *simpleHttpServer) Route(pattern string, handlerFunc http.HandlerFunc) {
-	http.HandleFunc("/", handlerFunc)
+func (shs *simpleHttpServer) Route(pattern string, handlerFunc func(ctx *context.HttpContext)) {
+	http.HandleFunc(pattern, func(writer http.ResponseWriter, request *http.Request) {
+		handlerFunc(context.BuildHttpContext(writer, request))
+	})
 }
 
 func (shs *simpleHttpServer) Start() error {
 	return http.ListenAndServe(shs.addr, nil)
 }
 
-func NewSimpleHttpServer(addr string) HttpServer {
-	if addr == "" {
-		addr = ":8080"
-	}
-
+func newSimpleHttpServer(addr string) HttpServer {
 	return &simpleHttpServer{
 		addr: addr,
 	}
+}
+
+func DefaultHttpServer() HttpServer {
+	return newSimpleHttpServer(":8080")
 }
