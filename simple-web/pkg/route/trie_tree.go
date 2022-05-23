@@ -1,6 +1,7 @@
 package route
 
 import (
+	"fmt"
 	"go_learning/simple-web/pkg/context"
 	"log"
 	"net/http"
@@ -13,6 +14,10 @@ type TrieTreeHandler struct {
 
 func (handler *TrieTreeHandler) Route(method string, path string, handleFunc HandleFunc) {
 
+	if err := handler.validateRouterPath(path); err != nil {
+		panic(err)
+	}
+
 	paths := strings.Split(strings.Trim(path, "/"), "/")
 	currentNode := handler.rootNode
 
@@ -24,6 +29,7 @@ func (handler *TrieTreeHandler) Route(method string, path string, handleFunc Han
 			return
 		}
 	}
+	currentNode.handleFunc = handleFunc
 }
 
 func (handler *TrieTreeHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -55,6 +61,18 @@ func (handler *TrieTreeHandler) findRouterHandleFunc(path string) (HandleFunc, b
 	}
 
 	return nil, false
+}
+
+func (handler *TrieTreeHandler) validateRouterPath(path string) error {
+	wildcardPosition := strings.Index(path, "*")
+
+	if wildcardPosition > 0 {
+		if wildcardPosition != len(path)-1 || path[wildcardPosition-1] != '/' {
+			return fmt.Errorf("### Invalid router path: %s ###\n", path)
+		}
+	}
+
+	return nil
 }
 
 // 确保 RouterHandler 实现 Handler

@@ -20,7 +20,7 @@ func TestRoute(ctx *context.HttpContext) {
 func main() {
 	simpleHttpServer := server.DefaultHttpServer()
 
-	simpleHttpServer.Route(http.MethodGet, "/reg", TestRoute)
+	simpleHttpServer.Route(http.MethodGet, "/*", TestRoute)
 
 	if err := simpleHttpServer.Start(); err != nil {
 		panic(err)

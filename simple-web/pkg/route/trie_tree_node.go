@@ -7,12 +7,18 @@ type trieTreeNode struct {
 }
 
 func (node *trieTreeNode) findChildNode(path string) (*trieTreeNode, bool) {
+
+	var wildcardNode *trieTreeNode
 	for _, childNode := range node.children {
-		if childNode.path == path {
+		if childNode.path == path && childNode.path != "*" {
 			return childNode, true
 		}
+
+		if childNode.path == "*" {
+			wildcardNode = childNode
+		}
 	}
-	return nil, false
+	return wildcardNode, wildcardNode != nil
 }
 
 func (node *trieTreeNode) createTrieTree(paths []string, handleFunc HandleFunc) {
