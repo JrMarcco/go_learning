@@ -2,7 +2,7 @@ package route
 
 import (
 	"fmt"
-	"go_learning/simple-web/pkg/context"
+	"go_learning/simple-web/pkg/ctx"
 	"log"
 	"net/http"
 	"strings"
@@ -34,7 +34,7 @@ func (handler *TrieTreeHandler) Route(method string, path string, handleFunc Han
 
 func (handler *TrieTreeHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 
-	ctx := context.BuildHttpContext(writer, request)
+	ctx := ctx.BuildHttpContext(writer, request)
 	if handleFunc, ok := handler.findRouterHandleFunc(request.URL.Path); ok {
 		handleFunc(ctx)
 		return

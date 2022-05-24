@@ -1,4 +1,4 @@
-package context
+package ctx
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ type HttpContext struct {
 	Req       *http.Request
 }
 
-func (ctx *HttpContext) ReadReqJson(req interface{}) error {
+func (ctx *HttpContext) ReadReqJson(req any) error {
 	body, err := io.ReadAll(ctx.Req.Body)
 	if err != nil {
 		return err
@@ -19,7 +19,7 @@ func (ctx *HttpContext) ReadReqJson(req interface{}) error {
 	return json.Unmarshal(body, req)
 }
 
-func (ctx *HttpContext) WriteRspJson(code int, rsp interface{}) error {
+func (ctx *HttpContext) WriteRspJson(code int, rsp any) error {
 	ctx.RspWriter.WriteHeader(code)
 
 	if rsp != nil {
@@ -34,7 +34,7 @@ func (ctx *HttpContext) WriteRspJson(code int, rsp interface{}) error {
 	return nil
 }
 
-func (ctx *HttpContext) Ok(rsp interface{}) error {
+func (ctx *HttpContext) Ok(rsp any) error {
 	return ctx.WriteRspJson(http.StatusOK, rsp)
 }
 

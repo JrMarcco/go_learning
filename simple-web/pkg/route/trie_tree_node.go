@@ -1,9 +1,18 @@
 package route
 
+const (
+	nodeTypeRoot      = iota // 根节点
+	nodeTypeWildcard         // 通配符匹配
+	nodeTypePathParam        // 路径参数匹配
+	nodeTypeReg              // 正则匹配
+	nodeTypeComplete         // 完全匹配
+)
+
 type trieTreeNode struct {
-	path       string
 	children   []*trieTreeNode
 	handleFunc HandleFunc
+
+	path string
 }
 
 func (node *trieTreeNode) findChildNode(path string) (*trieTreeNode, bool) {

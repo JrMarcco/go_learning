@@ -1,8 +1,8 @@
 package route
 
-import "go_learning/simple-web/pkg/context"
+import "go_learning/simple-web/pkg/ctx"
 
-type HandleFunc func(ctx *context.HttpContext)
+type HandleFunc func(ctx *ctx.HttpContext)
 
 type Router interface {
 	Route(method string, path string, handleFunc HandleFunc)
