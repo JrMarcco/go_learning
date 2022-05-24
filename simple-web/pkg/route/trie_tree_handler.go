@@ -18,7 +18,7 @@ func (handler *TrieTreeHandler) Route(method string, path string, handleFunc Han
 		panic(err)
 	}
 
-	paths := strings.Split(strings.Trim(path, "/"), "/")
+	paths := strings.Split(method+"/"+strings.Trim(path, "/"), "/")
 	currentNode := handler.rootNode
 
 	for index, path := range paths {
@@ -35,7 +35,7 @@ func (handler *TrieTreeHandler) Route(method string, path string, handleFunc Han
 func (handler *TrieTreeHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 
 	ctx := hctx.BuildHttpContext(writer, request)
-	if handleFunc, ok := handler.findRouterHandleFunc(request.URL.Path); ok {
+	if handleFunc, ok := handler.findRouterHandleFunc(request.Method, request.URL.Path); ok {
 		handleFunc(ctx)
 		return
 	}
@@ -45,8 +45,8 @@ func (handler *TrieTreeHandler) ServeHTTP(writer http.ResponseWriter, request *h
 	}
 }
 
-func (handler *TrieTreeHandler) findRouterHandleFunc(path string) (HandleFunc, bool) {
-	paths := strings.Split(strings.Trim(path, "/"), "/")
+func (handler *TrieTreeHandler) findRouterHandleFunc(method string, path string) (HandleFunc, bool) {
+	paths := strings.Split(method+"/"+strings.Trim(path, "/"), "/")
 
 	currentNode := handler.rootNode
 
