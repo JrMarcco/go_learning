@@ -3,7 +3,6 @@ package route
 import (
 	"fmt"
 	"go_learning/simple-web/pkg/hctx"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -41,7 +40,7 @@ func (handler *TrieTreeHandler) ServeHTTP(writer http.ResponseWriter, request *h
 	}
 
 	if err := ctx.NotFound(); err != nil {
-		log.Fatalf("%-v\n", err)
+		fmt.Printf("%-v\n", err)
 	}
 }
 
