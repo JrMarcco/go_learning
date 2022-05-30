@@ -1,4 +1,4 @@
-package mutex
+package test
 
 import (
 	"fmt"
