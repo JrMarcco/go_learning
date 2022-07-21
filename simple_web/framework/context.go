@@ -172,3 +172,15 @@ func (ctx *Context) Json(status int, obj any) error {
 	}
 	return nil
 }
+
+func (ctx *Context) OkJson(obj any) error {
+	return ctx.Json(http.StatusOK, obj)
+}
+
+func (ctx *Context) NotFoundJson(obj any) error {
+	return ctx.Json(http.StatusNotFound, obj)
+}
+
+func (ctx *Context) ErrJson(obj any) error {
+	return ctx.Json(http.StatusInternalServerError, obj)
+}

@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func FooControllerHandler(ctx *framework.Context) error {
+func FooController(ctx *framework.Context) error {
 	done := make(chan struct{}, 1)
 	panicChan := make(chan any, 1)
 
