@@ -12,7 +12,7 @@ type TrieTree struct {
 type trieTreeNode struct {
 	isLeafNode bool
 	segment    string
-	handler    ControllerHandler
+	handlers   []ControllerHandler
 	children   []*trieTreeNode
 }
 
@@ -27,7 +27,7 @@ func NewTrieTree() *TrieTree {
 	return &TrieTree{root: newNode()}
 }
 
-func (tree *TrieTree) AddRouter(url string, handler ControllerHandler) error {
+func (tree *TrieTree) AddRouter(url string, handlers []ControllerHandler) error {
 	url = strings.TrimLeft(url, "/")
 
 	// 判断是否路径已经注册
@@ -59,7 +59,7 @@ func (tree *TrieTree) AddRouter(url string, handler ControllerHandler) error {
 			if isLast {
 				// 当前为叶子
 				child.isLeafNode = true
-				child.handler = handler
+				child.handlers = handlers
 			}
 			rootNode.children = append(rootNode.children, child)
 			objNode = child
@@ -70,10 +70,10 @@ func (tree *TrieTree) AddRouter(url string, handler ControllerHandler) error {
 	return nil
 }
 
-func (tree *TrieTree) FindHandler(url string) ControllerHandler {
+func (tree *TrieTree) FindHandler(url string) []ControllerHandler {
 	matchNode := tree.root.findMatchNode(url)
 	if matchNode != nil {
-		return matchNode.handler
+		return matchNode.handlers
 	}
 	return nil
 }

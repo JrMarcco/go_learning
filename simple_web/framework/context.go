@@ -16,8 +16,9 @@ type Context struct {
 	req       *http.Request
 	rspWriter http.ResponseWriter
 
-	ctx     context.Context
-	handler ControllerHandler
+	ctx          context.Context
+	handlerIndex int
+	handlers     []ControllerHandler
 
 	timeoutFlag bool
 	writerMux   *sync.Mutex
@@ -25,10 +26,11 @@ type Context struct {
 
 func NewContext(request *http.Request, responseWriter http.ResponseWriter) *Context {
 	return &Context{
-		req:       request,
-		rspWriter: responseWriter,
-		ctx:       request.Context(),
-		writerMux: &sync.Mutex{},
+		req:          request,
+		rspWriter:    responseWriter,
+		ctx:          request.Context(),
+		writerMux:    &sync.Mutex{},
+		handlerIndex: -1,
 	}
 }
 
@@ -48,6 +50,10 @@ func (ctx *Context) SetTimeout() {
 	ctx.timeoutFlag = true
 }
 
+func (ctx *Context) SetHandlers(handlers []ControllerHandler) {
+	ctx.handlers = handlers
+}
+
 func (ctx *Context) Timeout() bool {
 	return ctx.timeoutFlag
 }
@@ -62,6 +68,16 @@ func (ctx *Context) Deadline() (deadline time.Time, ok bool) {
 
 func (ctx *Context) Done() <-chan struct{} {
 	return ctx.BaseContext().Done()
+}
+
+func (ctx *Context) Next() error {
+	ctx.handlerIndex++
+	if ctx.handlerIndex < len(ctx.handlers) {
+		if err := ctx.handlers[ctx.handlerIndex](ctx); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (ctx *Context) Err() error {

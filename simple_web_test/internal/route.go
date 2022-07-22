@@ -2,13 +2,16 @@ package internal
 
 import (
 	"go_learning/simple_web/framework"
+	"go_learning/simple_web/framework/middleware"
 )
 
 func RegisterRouter(core *framework.Core) {
-	core.Get("/user/login", UserController)
+	core.Get("/user/login", middleware.Cost(), UserController)
 
 	subApi := core.Group("/sub")
 	{
+		subApi.Use(middleware.Cost())
+
 		subApi.Get("/:id", SubjectGetController)
 		subApi.Put("/:id", SubjectUpdateController)
 		subApi.Delete("/:id", SubjectDelController)
