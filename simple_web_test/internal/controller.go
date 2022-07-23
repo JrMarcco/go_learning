@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go_learning/simple_web/framework"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -22,7 +23,7 @@ func FooController(ctx *framework.Context) error {
 			}
 		}()
 		time.Sleep(10 * time.Second)
-		ctx.Json(200, "ok")
+		ctx.SetOkStatus().Json("ok")
 
 		done <- struct{}{}
 	}()
@@ -32,13 +33,13 @@ func FooController(ctx *framework.Context) error {
 		ctx.WriterMux().Lock()
 		defer ctx.WriterMux().Unlock()
 		log.Default().Println(p)
-		ctx.Json(500, "panic")
+		ctx.SetStatus(http.StatusInternalServerError).Json("panic")
 	case <-done:
 		fmt.Println("done")
 	case <-durationCtx.Done():
 		ctx.WriterMux().Lock()
 		defer ctx.WriterMux().Unlock()
-		ctx.Json(500, "timeout")
+		ctx.SetStatus(http.StatusInternalServerError).Json("panic")
 		ctx.SetTimeout()
 	}
 	return nil

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go_learning/simple_web/framework"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -32,11 +33,11 @@ func Timeout(d time.Duration) framework.ControllerHandler {
 		select {
 		case p := <-panicChan:
 			log.Default().Println(p)
-			ctx.ErrJson("panic")
+			ctx.SetStatus(http.StatusInternalServerError).Json("panic")
 		case <-done:
 			fmt.Println("done")
 		case <-durationCtx.Done():
-			ctx.ErrJson("timeout")
+			ctx.SetStatus(http.StatusInternalServerError).Json("timeout")
 			ctx.SetTimeout()
 		}
 

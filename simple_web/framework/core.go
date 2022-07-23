@@ -65,25 +65,28 @@ func (c *Core) Use(middlewares ...ControllerHandler) {
 func (c *Core) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 
 	ctx := NewContext(request, writer)
-	handlers := c.FindRouter(request)
-	if handlers == nil {
-		ctx.NotFoundJson("Not Found")
+	routeNode := c.FindRouteNode(request)
+	if routeNode == nil {
+		ctx.SetStatus(http.StatusNotFound).Json("Not Found")
 		return
 	}
 
-	ctx.SetHandlers(handlers)
+	ctx.SetParams(
+		routeNode.parseParamsFromEndNode(request.URL.Path),
+	)
+
+	ctx.SetHandlers(routeNode.handlers)
 	if err := ctx.Next(); err != nil {
-		ctx.ErrJson("Inner Error")
+		ctx.SetStatus(http.StatusInternalServerError).Json("Inner Error")
 		return
 	}
 }
 
-func (c *Core) FindRouter(request *http.Request) []ControllerHandler {
+func (c *Core) FindRouteNode(request *http.Request) *trieTreeNode {
 	reqUrl := request.URL.Path
 	reqMethod := strings.ToUpper(request.Method)
-
 	if methodRouters, ok := c.router[reqMethod]; ok {
-		return methodRouters.FindHandler(reqUrl)
+		return methodRouters.root.findMatchNode(reqUrl)
 	}
 	return nil
 }

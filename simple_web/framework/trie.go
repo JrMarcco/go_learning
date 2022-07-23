@@ -10,6 +10,7 @@ type TrieTree struct {
 }
 
 type trieTreeNode struct {
+	parent     *trieTreeNode
 	isLeafNode bool
 	segment    string
 	handlers   []ControllerHandler
@@ -61,19 +62,12 @@ func (tree *TrieTree) AddRouter(url string, handlers []ControllerHandler) error 
 				child.isLeafNode = true
 				child.handlers = handlers
 			}
+			child.parent = rootNode
 			rootNode.children = append(rootNode.children, child)
 			objNode = child
 		}
 		// 以子节点为根继续构建子树
 		rootNode = objNode
-	}
-	return nil
-}
-
-func (tree *TrieTree) FindHandler(url string) []ControllerHandler {
-	matchNode := tree.root.findMatchNode(url)
-	if matchNode != nil {
-		return matchNode.handlers
 	}
 	return nil
 }
@@ -133,6 +127,27 @@ func (node *trieTreeNode) findMatchNode(url string) *trieTreeNode {
 		}
 	}
 	return nil
+}
+
+func (node *trieTreeNode) parseParamsFromEndNode(url string) map[string]string {
+	url = strings.TrimLeft(url, "/")
+	params := map[string]string{}
+
+	segments := strings.Split(url, "/")
+	if len(segments) > 0 {
+		currentNode := node
+		for i := len(segments); i >= 0; i-- {
+			if currentNode.segment == "" {
+				break
+			}
+
+			if isWildSegment(currentNode.segment) {
+				params[currentNode.segment[1:]] = segments[i]
+			}
+			currentNode = currentNode.parent
+		}
+	}
+	return params
 }
 
 // isWildSegment 判断是否为通配 segment
