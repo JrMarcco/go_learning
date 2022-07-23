@@ -17,6 +17,8 @@ type IResponse interface {
 	SetOkStatus() IResponse
 }
 
+var _ IResponse = new(Context)
+
 func (ctx *Context) Json(obj any) IResponse {
 	bytes, err := json.Marshal(obj)
 	if err != nil {

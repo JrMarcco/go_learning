@@ -54,6 +54,8 @@ type IRequest interface {
 	Cookie(key string) (string, bool)
 }
 
+var _ IRequest = new(Context)
+
 func (ctx *Context) QueryAll() map[string][]string {
 	if ctx.req != nil {
 		return ctx.req.URL.Query()
