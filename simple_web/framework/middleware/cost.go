@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func Cost() framework.ControllerHandler {
+func Cost() framework.HandlerFunc {
 	return func(ctx *framework.Context) error {
 		start := time.Now()
 

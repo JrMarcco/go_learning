@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func Timeout(d time.Duration) framework.ControllerHandler {
+func Timeout(d time.Duration) framework.HandlerFunc {
 	return func(ctx *framework.Context) error {
 
 		done := make(chan struct{}, 1)

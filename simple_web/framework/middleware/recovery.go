@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func Recovery() framework.ControllerHandler {
+func Recovery() framework.HandlerFunc {
 	return func(ctx *framework.Context) error {
 		defer func() {
 			if err := recover(); err != nil {

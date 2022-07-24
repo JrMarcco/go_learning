@@ -13,7 +13,7 @@ type Context struct {
 
 	ctx          context.Context
 	handlerIndex int
-	handlers     []ControllerHandler
+	handlers     HandlerChain
 
 	timeoutFlag bool
 	writerMux   *sync.Mutex
@@ -47,7 +47,7 @@ func (ctx *Context) SetTimeout() {
 	ctx.timeoutFlag = true
 }
 
-func (ctx *Context) SetHandlers(handlers []ControllerHandler) {
+func (ctx *Context) SetHandlers(handlers []HandlerFunc) {
 	ctx.handlers = handlers
 }
 
