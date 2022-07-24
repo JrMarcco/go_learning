@@ -1,10 +1,16 @@
 package main
 
 import (
+	"context"
 	"go_learning/simple_web/framework"
 	"go_learning/simple_web/framework/middleware"
 	"go_learning/simple_web_test/internal"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
@@ -16,5 +22,18 @@ func main() {
 		Addr:    ":8080",
 	}
 
-	server.ListenAndServe()
+	go func() {
+		server.ListenAndServe()
+	}()
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+	<-quit
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatal("Server Shutdown: ", err)
+	}
 }

@@ -6,6 +6,7 @@ import (
 )
 
 func RegisterRouter(core *framework.Core) {
+	core.Get("/timeout", TimeoutController)
 	core.Get("/user/login", middleware.Cost(), UserController)
 
 	subApi := core.Group("/sub")
