@@ -76,10 +76,7 @@ func (c *Core) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	)
 
 	ctx.SetHandlers(routeNode.handlers)
-	if err := ctx.Next(); err != nil {
-		ctx.SetStatus(http.StatusInternalServerError).Json("Inner Error")
-		return
-	}
+	ctx.Next()
 }
 
 func (c *Core) FindRouteNode(request *http.Request) *trieTreeNode {

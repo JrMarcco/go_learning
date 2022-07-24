@@ -10,7 +10,7 @@ import (
 )
 
 func Timeout(d time.Duration) framework.HandlerFunc {
-	return func(ctx *framework.Context) error {
+	return func(ctx *framework.Context) {
 
 		done := make(chan struct{}, 1)
 		panicChan := make(chan any, 1)
@@ -40,7 +40,5 @@ func Timeout(d time.Duration) framework.HandlerFunc {
 			ctx.SetStatus(http.StatusInternalServerError).Json("timeout")
 			ctx.SetTimeout()
 		}
-
-		return nil
 	}
 }

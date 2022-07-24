@@ -5,8 +5,7 @@ import (
 	"time"
 )
 
-func TimeoutController(ctx *framework.Context) error {
+func TimeoutController(ctx *framework.Context) {
 	time.Sleep(10 * time.Second)
 	ctx.SetOkStatus().Json("ok, TimeoutController")
-	return nil
 }

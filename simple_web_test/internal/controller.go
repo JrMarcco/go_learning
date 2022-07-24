@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func FooController(ctx *framework.Context) error {
+func FooController(ctx *framework.Context) {
 	done := make(chan struct{}, 1)
 	panicChan := make(chan any, 1)
 
@@ -42,5 +42,4 @@ func FooController(ctx *framework.Context) error {
 		ctx.SetStatus(http.StatusInternalServerError).Json("panic")
 		ctx.SetTimeout()
 	}
-	return nil
 }
