@@ -23,7 +23,9 @@ func main() {
 	}
 
 	go func() {
-		server.ListenAndServe()
+		if err := server.ListenAndServe(); err != nil {
+			log.Fatal("Server Start: ", err)
+		}
 	}()
 
 	quit := make(chan os.Signal)
