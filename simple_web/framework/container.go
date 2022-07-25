@@ -55,6 +55,10 @@ func (sc *ServiceContainer) Bind(sp ServiceProvider) error {
 	return nil
 }
 
+func (sc *ServiceContainer) IsBind(key string) bool {
+	return sc.findServiceProvider(key) != nil
+}
+
 func (sc *ServiceContainer) Make(key string) (any, error) {
 	return sc.make(key, nil, false)
 }
