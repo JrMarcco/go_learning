@@ -16,7 +16,7 @@ const (
 type Core struct {
 	container   Container
 	router      map[string]*trieTree
-	middlewares []ControllerHandler
+	middlewares HandlerChain
 
 	maxParams uint16
 }
@@ -42,35 +42,35 @@ func (c *Core) IsBind(key string) bool {
 	return c.container.IsBind(key)
 }
 
-func (c *Core) Get(url string, handlers ...ControllerHandler) {
+func (c *Core) Get(url string, handlers ...HandlerFunc) {
 	all := append(c.middlewares, handlers...)
 	if err := c.router[GET].AddRouter(url, all); err != nil {
 		log.Fatal("add router error: ", err)
 	}
 }
 
-func (c *Core) Post(url string, handlers ...ControllerHandler) {
+func (c *Core) Post(url string, handlers ...HandlerFunc) {
 	all := append(c.middlewares, handlers...)
 	if err := c.router[POST].AddRouter(url, all); err != nil {
 		log.Fatal("add router error: ", err)
 	}
 }
 
-func (c *Core) Put(url string, handlers ...ControllerHandler) {
+func (c *Core) Put(url string, handlers ...HandlerFunc) {
 	all := append(c.middlewares, handlers...)
 	if err := c.router[PUT].AddRouter(url, all); err != nil {
 		log.Fatal("add router error: ", err)
 	}
 }
 
-func (c *Core) Delete(url string, handlers ...ControllerHandler) {
+func (c *Core) Delete(url string, handlers ...HandlerFunc) {
 	all := append(c.middlewares, handlers...)
 	if err := c.router[DELETE].AddRouter(url, all); err != nil {
 		log.Fatal("add router error: ", err)
 	}
 }
 
-func (c *Core) Use(middlewares ...ControllerHandler) {
+func (c *Core) Use(middlewares ...HandlerFunc) {
 	c.middlewares = append(c.middlewares, middlewares...)
 }
 
@@ -88,10 +88,7 @@ func (c *Core) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	)
 
 	ctx.SetHandlers(routeNode.handlers)
-	if err := ctx.Next(); err != nil {
-		ctx.SetStatus(http.StatusInternalServerError).Json("Inner Error")
-		return
-	}
+	ctx.Next()
 }
 
 func (c *Core) FindRouteNode(request *http.Request) *trieTreeNode {

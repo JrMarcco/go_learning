@@ -68,7 +68,7 @@ func (g *Group) getAbsolutePrefix() string {
 	return g.parent.getAbsolutePrefix() + g.prefix
 }
 
-func (g *Group) getMiddlewares() []HandlerFunc {
+func (g *Group) getMiddlewares() HandlerChain {
 	if g.parent == nil {
 		return g.middlewares
 	}

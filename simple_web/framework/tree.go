@@ -13,7 +13,7 @@ type trieTreeNode struct {
 	parent     *trieTreeNode
 	isLeafNode bool
 	segment    string
-	handlers   []ControllerHandler
+	handlers   HandlerChain
 	children   []*trieTreeNode
 }
 
@@ -28,7 +28,7 @@ func NewTrieTree() *trieTree {
 	return &trieTree{root: newNode()}
 }
 
-func (tree *trieTree) AddRouter(url string, handlers []ControllerHandler) error {
+func (tree *trieTree) AddRouter(url string, handlers HandlerChain) error {
 	url = strings.TrimLeft(url, "/")
 
 	// 判断是否路径已经注册
