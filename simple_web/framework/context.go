@@ -8,6 +8,10 @@ import (
 )
 
 type Context struct {
+	core           *Core
+	container      Container
+	providerParams []any
+
 	req       *http.Request
 	rspWriter http.ResponseWriter
 
@@ -29,6 +33,18 @@ func NewContext(request *http.Request, responseWriter http.ResponseWriter) *Cont
 		writerMux:    &sync.Mutex{},
 		handlerIndex: -1,
 	}
+}
+
+func (ctx *Context) Make(key string) (any, error) {
+	return ctx.container.Make(key)
+}
+
+func (ctx *Context) MustMake(key string) any {
+	return ctx.container.MustMake(key)
+}
+
+func (ctx *Context) MakeNew(key string, params []any) (any, error) {
+	return ctx.container.MakeNew(key, params)
 }
 
 func (ctx *Context) WriterMux() *sync.Mutex {

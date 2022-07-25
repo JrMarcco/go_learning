@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type TrieTree struct {
+type trieTree struct {
 	root *trieTreeNode
 }
 
@@ -24,11 +24,11 @@ func newNode() *trieTreeNode {
 	}
 }
 
-func NewTrieTree() *TrieTree {
-	return &TrieTree{root: newNode()}
+func NewTrieTree() *trieTree {
+	return &trieTree{root: newNode()}
 }
 
-func (tree *TrieTree) AddRouter(url string, handlers []ControllerHandler) error {
+func (tree *trieTree) AddRouter(url string, handlers []ControllerHandler) error {
 	url = strings.TrimLeft(url, "/")
 
 	// 判断是否路径已经注册

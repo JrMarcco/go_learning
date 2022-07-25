@@ -14,20 +14,32 @@ const (
 )
 
 type Core struct {
-	router      map[string]*TrieTree
+	container   Container
+	router      map[string]*trieTree
 	middlewares []ControllerHandler
+
+	maxParams uint16
 }
 
 func NewCore() *Core {
-	router := map[string]*TrieTree{}
+	router := make(map[string]*trieTree, 4)
 	router[GET] = NewTrieTree()
 	router[POST] = NewTrieTree()
 	router[PUT] = NewTrieTree()
 	router[DELETE] = NewTrieTree()
 
 	return &Core{
-		router: router,
+		container: NewServiceContainer(),
+		router:    router,
 	}
+}
+
+func (c *Core) Bind(sp ServiceProvider) error {
+	return c.container.Bind(sp)
+}
+
+func (c *Core) IsBind(key string) bool {
+	return c.container.IsBind(key)
 }
 
 func (c *Core) Get(url string, handlers ...ControllerHandler) {
@@ -93,4 +105,12 @@ func (c *Core) FindRouteNode(request *http.Request) *trieTreeNode {
 
 func (c *Core) Group(prefix string) *Group {
 	return NewGroup(c, prefix)
+}
+
+func (c *Core) allocateContext() *Context {
+	return &Context{
+		core:           c,
+		container:      c.container,
+		providerParams: make([]any, 0, c.maxParams),
+	}
 }
