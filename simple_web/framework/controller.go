@@ -1,3 +1,5 @@
 package framework
 
-type ControllerHandler func(ctx *Context) error
+type HandlerFunc func(ctx *Context)
+
+type HandlerChain []HandlerFunc

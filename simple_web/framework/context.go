@@ -17,7 +17,7 @@ type Context struct {
 
 	ctx          context.Context
 	handlerIndex int
-	handlers     []ControllerHandler
+	handlers     HandlerChain
 
 	timeoutFlag bool
 	writerMux   *sync.Mutex
@@ -63,7 +63,7 @@ func (ctx *Context) SetTimeout() {
 	ctx.timeoutFlag = true
 }
 
-func (ctx *Context) SetHandlers(handlers []ControllerHandler) {
+func (ctx *Context) SetHandlers(handlers []HandlerFunc) {
 	ctx.handlers = handlers
 }
 
@@ -87,14 +87,13 @@ func (ctx *Context) Done() <-chan struct{} {
 	return ctx.BaseContext().Done()
 }
 
-func (ctx *Context) Next() error {
+func (ctx *Context) Next() {
 	ctx.handlerIndex++
-	if ctx.handlerIndex < len(ctx.handlers) {
-		if err := ctx.handlers[ctx.handlerIndex](ctx); err != nil {
-			return err
-		}
+
+	for ctx.handlerIndex < len(ctx.handlers) {
+		ctx.handlers[ctx.handlerIndex](ctx)
+		ctx.handlerIndex++
 	}
-	return nil
 }
 
 func (ctx *Context) Err() error {

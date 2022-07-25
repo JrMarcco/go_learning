@@ -1,12 +1,12 @@
 package framework
 
 type IGroup interface {
-	Get(string, ...ControllerHandler)
-	Post(string, ...ControllerHandler)
-	Put(string, ...ControllerHandler)
-	Delete(string, ...ControllerHandler)
+	Get(string, ...HandlerFunc)
+	Post(string, ...HandlerFunc)
+	Put(string, ...HandlerFunc)
+	Delete(string, ...HandlerFunc)
 
-	Use(middlewares ...ControllerHandler)
+	Use(middlewares ...HandlerFunc)
 
 	Group(string) IGroup
 }
@@ -16,7 +16,7 @@ type Group struct {
 	parent *Group
 	prefix string
 
-	middlewares []ControllerHandler
+	middlewares HandlerChain
 }
 
 func NewGroup(core *Core, prefix string) *Group {
@@ -33,31 +33,31 @@ func (g *Group) Group(url string) IGroup {
 	return childGroup
 }
 
-func (g *Group) Get(url string, handlers ...ControllerHandler) {
+func (g *Group) Get(url string, handlers ...HandlerFunc) {
 	url = g.getAbsolutePrefix() + url
 	all := append(g.getMiddlewares(), handlers...)
 	g.core.Get(url, all...)
 }
 
-func (g *Group) Post(url string, handlers ...ControllerHandler) {
+func (g *Group) Post(url string, handlers ...HandlerFunc) {
 	url = g.getAbsolutePrefix() + url
 	all := append(g.getMiddlewares(), handlers...)
 	g.core.Post(url, all...)
 }
 
-func (g *Group) Put(url string, handlers ...ControllerHandler) {
+func (g *Group) Put(url string, handlers ...HandlerFunc) {
 	url = g.getAbsolutePrefix() + url
 	all := append(g.getMiddlewares(), handlers...)
 	g.core.Put(url, all...)
 }
 
-func (g *Group) Delete(url string, handlers ...ControllerHandler) {
+func (g *Group) Delete(url string, handlers ...HandlerFunc) {
 	url = g.getAbsolutePrefix() + url
 	all := append(g.getMiddlewares(), handlers...)
 	g.core.Delete(url, all...)
 }
 
-func (g *Group) Use(middlewares ...ControllerHandler) {
+func (g *Group) Use(middlewares ...HandlerFunc) {
 	g.middlewares = append(g.middlewares, middlewares...)
 }
 
@@ -68,7 +68,7 @@ func (g *Group) getAbsolutePrefix() string {
 	return g.parent.getAbsolutePrefix() + g.prefix
 }
 
-func (g *Group) getMiddlewares() []ControllerHandler {
+func (g *Group) getMiddlewares() []HandlerFunc {
 	if g.parent == nil {
 		return g.middlewares
 	}

@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-func Timeout(d time.Duration) framework.ControllerHandler {
-	return func(ctx *framework.Context) error {
+func Timeout(d time.Duration) framework.HandlerFunc {
+	return func(ctx *framework.Context) {
 
 		done := make(chan struct{}, 1)
 		panicChan := make(chan any, 1)
@@ -40,7 +40,5 @@ func Timeout(d time.Duration) framework.ControllerHandler {
 			ctx.SetStatus(http.StatusInternalServerError).Json("timeout")
 			ctx.SetTimeout()
 		}
-
-		return nil
 	}
 }
