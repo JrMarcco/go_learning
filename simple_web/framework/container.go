@@ -29,7 +29,11 @@ type ServiceContainer struct {
 var _ Container = new(ServiceContainer)
 
 func NewServiceContainer() *ServiceContainer {
-	return &ServiceContainer{}
+	return &ServiceContainer{
+		providers: serviceProviders{},
+		instances: serviceInstances{},
+		rwMutex:   sync.RWMutex{},
+	}
 }
 
 func (sc *ServiceContainer) Bind(sp ServiceProvider) error {

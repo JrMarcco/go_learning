@@ -20,7 +20,7 @@ type Context struct {
 	handlers     HandlerChain
 
 	timeoutFlag bool
-	writerMux   *sync.Mutex
+	writerMux   sync.Mutex
 
 	params map[string]string
 }
@@ -30,7 +30,7 @@ func NewContext(request *http.Request, responseWriter http.ResponseWriter) *Cont
 		req:          request,
 		rspWriter:    responseWriter,
 		ctx:          request.Context(),
-		writerMux:    &sync.Mutex{},
+		writerMux:    sync.Mutex{},
 		handlerIndex: -1,
 	}
 }
@@ -47,7 +47,7 @@ func (ctx *Context) MakeNew(key string, params []any) (any, error) {
 	return ctx.container.MakeNew(key, params)
 }
 
-func (ctx *Context) WriterMux() *sync.Mutex {
+func (ctx *Context) WriterMux() sync.Mutex {
 	return ctx.writerMux
 }
 
@@ -102,4 +102,11 @@ func (ctx *Context) Err() error {
 
 func (ctx *Context) Value(key any) any {
 	return ctx.BaseContext().Value(key)
+}
+
+func (ctx *Context) reset(responseWriter http.ResponseWriter, request *http.Request) {
+	ctx.rspWriter = responseWriter
+	ctx.req = request
+	ctx.ctx = request.Context()
+	ctx.handlerIndex = -1
 }

@@ -1,6 +1,9 @@
 package internal
 
-import "go_learning/simple_web/framework"
+import (
+	"go_learning/simple_web/framework"
+	"go_learning/simple_web/provider/demo"
+)
 
 func SubjectAddController(c *framework.Context) {
 	c.SetOkStatus().Json("ok, SubjectAddController")
@@ -23,5 +26,9 @@ func SubjectGetController(c *framework.Context) {
 }
 
 func SubjectNameController(c *framework.Context) {
-	c.SetOkStatus().Json("ok, SubjectNameController")
+
+	serviceDemo := c.MustMake(demo.Key).(demo.FooService)
+	foo := serviceDemo.GetFoo()
+
+	c.SetOkStatus().Json(foo)
 }
