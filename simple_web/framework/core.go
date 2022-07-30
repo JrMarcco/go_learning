@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 const (
@@ -17,6 +18,7 @@ type Core struct {
 	container   Container
 	router      map[string]*trieTree
 	middlewares HandlerChain
+	pool        sync.Pool
 
 	maxParams uint16
 }
@@ -28,10 +30,15 @@ func NewCore() *Core {
 	router[PUT] = NewTrieTree()
 	router[DELETE] = NewTrieTree()
 
-	return &Core{
+	core := &Core{
 		container: NewServiceContainer(),
 		router:    router,
 	}
+
+	core.pool.New = func() any {
+		return core.allocateContext()
+	}
+	return core
 }
 
 func (c *Core) Bind(sp ServiceProvider) error {
@@ -76,7 +83,8 @@ func (c *Core) Use(middlewares ...HandlerFunc) {
 
 func (c *Core) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 
-	ctx := NewContext(request, writer)
+	ctx := c.pool.Get().(*Context)
+	ctx.reset(writer, request)
 	routeNode := c.FindRouteNode(request)
 	if routeNode == nil {
 		ctx.SetStatus(http.StatusNotFound).Json("Not Found")
